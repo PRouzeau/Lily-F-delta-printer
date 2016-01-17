@@ -361,8 +361,9 @@ extrusionw = ($extrusionwd)? $extrusionwd:extrusion;
       if (belt_dist||$bdist) {
         bd = $bdist ? $bdist:belt_dist;
         ht = $ht_tens?$ht_tens-25:30; // if tensioner at the bottom
-        color("black")
-          cubez (6,12.5,htotal-40-ht, beam_int_radius-bd+3,0,ht); 
+        color("black") //show belt 
+          dmirrory() 
+            cubez (6,2.5,htotal-40-ht, beam_int_radius-bd+3,6,ht); 
       }  
     }
     bed_dia = $bedDia?$bedDia:working_dia*1.12;

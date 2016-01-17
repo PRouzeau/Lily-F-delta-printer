@@ -4,6 +4,7 @@
 // Program license GPL 2.0
 // documentation licence cc BY-SA and GFDL 1.2
 // Design licence CERN OHL V1.2
+// 17 jan 15 - corrected bug on foot base - was imposed wrongly 
 
 part=0;
 if (part) { // set part =0 (no part) for simulation
@@ -592,7 +593,6 @@ module wallsup() {
 
 
 module foot() {
-  rod_base = 49;
   wall_space = 52;
   fix_space = 64;
   offsety = motor_offset+0.5;
