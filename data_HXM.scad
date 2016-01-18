@@ -4,9 +4,8 @@
 // Program license GPL 2.0
 // documentation licence cc BY-SA and GFDL 1.2
 // Design licence CERN OHL V1.2
-// 17 jan 15 - corrected bug on foot base - was imposed wrongly 
 
-part=0;
+part=8;
 if (part) { // set part =0 (no part) for simulation
   $fn=32;
   if (part==1) foot(); //foot with elevated support, for Fisher std rods
@@ -16,7 +15,7 @@ if (part) { // set part =0 (no part) for simulation
   else if (part==5) carriage();   
   else if (part==6) tensioner(); // tensioner for plain bearings
   else if (part==7) tensioner(true); // tensioner for flanged bearings  -- add a washer between bearings
-  else if (part==8) rot (180) twheel(); // option: tensioner wheel
+  else if (part==8) duplx (25,2) rot (180) twheel(); // option: tensioner wheel
   else if (part==9) duply (10,7) arm_junction(); // arms junction
   else if (part==10) dmirrorx() tsl (28) rot (90-22.5) extruder_bracket(); // extruder plate attach 
   else if (part==20) ref_stick();  // print the reference stick  
@@ -46,7 +45,7 @@ bed_level = 0;
 extrusion = 0;  // stop the simulator rod module
 rod_dia   = 8;  // Rod diameter
 rod_space = 42; // set two rods instead of one extrusion 45 for beta, 42 for 1.0
-rod_height= 426;
+//rod_height= 426;
 rod_base  = 46;
 
 frameThk = 12;  // frame structure thickness
@@ -87,7 +86,7 @@ motor_offset = -8;
 
 spool_diam = 200;  
 $spool_rot = [0,0,0];
-$spool_tsl = [80,60,htotal+18+8];
+$spool_tsl = [80,60,htotal+18+15];
 
 $bedDia=200; // force the bed diameter 190+16
 
@@ -97,14 +96,14 @@ bed_color = "silver";
 panel_color = [0.5,0.5,0.5,0.5];
 //panel_color = "burlywood";
 
-camPos=true;
+camPos=false;
 
 $vpd=camPos?1750:$vpd;   // camera distance: work only if set outside a module
 $vpr=camPos?[80,0,42]:$vpr;   // camera rotation
 $vpt=camPos?[190,-67,290]:$vpt; //camera translation  */
 
 // data specific to this printer
-$ht_tens = 73; // height of tensioner frame (height of bottom of the corner)
+$ht_tens = 72; // height of tensioner frame (height of bottom of the corner)
 tens_space=27; // space between tensioner screws
 corner_hoffset = 20; // 35 gives 150 mm part - 40 could be obtained with laths thk 5mm
 corner_hoffset2 = 18; // for the door - constant for a given rod diameter
@@ -128,6 +127,23 @@ basewd = 380;
 basedp = 340;
 basedpoffset = 6;
 //*/
+
+/* Alternative dataset with same components HXM 139/500 
+//  -> usable diameter 190 mm H centre ~ 225mm, periphery 215mm - base slightly enlarged
+// uncommenting the block will supersede former data  
+Delta_name = str("HXM140/530 by PRZ");
+beam_int_radius = 140;
+arm_length = 206;
+mini_angle = 22; 
+basewd = 380;
+basedp = 340;
+basedpoffset = 6;
+htotal=530;
+wallsup = 80;
+rod_base= 2;
+$ht_tens = 60;
+//*/
+
 
 $noTop = false;
 $boxed = true;
@@ -205,7 +221,7 @@ module buildSides() {
             cyly (5,-220,      0,5,-2);
             cyly (5,-212,      12,0, -htotal+23+10+5);
           } 
-      *color("red") //measurement for rod length  172 for beam_int_radius 131
+      color("red") //measurement for rod length  172 for beam_int_radius 131
         tsl (rodrd+5.5,8,-16)
           rotz(30)  
             cyly (3,-172,    0,-19.1);
@@ -234,7 +250,13 @@ module buildAllFrame() {
   color("lightgrey") 
     cubez (basewd,basedp,-basethk, basewoffset,basedpoffset); // base plate
   color(struct_color) {
-    rot120() tsl (0,beam_int_radius,0) foot(); 
+    rot120() tsl (0,beam_int_radius,0) {
+       if (wallsup) {
+         foot2();
+         tsl (0,0,wallsup) wallsup();
+       }
+       else foot(); 
+     }   
     rot120 (-30)  
       tsl (beam_int_radius,0,$ht_tens) {
         tensioner(); 
@@ -247,7 +269,7 @@ module buildAllFrame() {
         tsl (0,beam_int_radius+motor_offset,htotal-23) // motor
           rot(-90) nema17(32);   
       dmirrory()  //rods
-        cylz (rod_dia,rod_height,   beam_int_radius,rod_space/2,rod_base); 
+        cylz (rod_dia,htotal-rod_base-28,   beam_int_radius,rod_space/2,rod_base); 
     }
   } 
   tsl (22,38,htotal-120)
@@ -481,8 +503,8 @@ module foot2() {
   rod_base  = 0.8;
   htr = 10; // rod insertion height
   rod_hold = rod_dia+7;
-  scr = (htr-rod_base)/2+rod_base; // screw height
-  wall_space = 100;
+  scr = (htr)/2+rod_base; // screw height
+  wall_space = 58;
   offsety = motor_offset+0.5;
   rodrd = rod_space/2+4;
   rodht = 5;
@@ -495,45 +517,43 @@ module foot2() {
       dmirrorx() {
         hull() { // rods ends
           cyly (8.5,14-offsety,     16,offsety,scr); // fix holes
-          cubey(2,12-offsety,scr+6,  rod_space/2-2,offsety+2,(scr+6)/2);
-          cylz (rod_hold,htr-rod_base-2,   rod_space/2,0,rod_base+2);  
+          cubey(2,12-offsety,htr+rod_base,  
+            rod_space/2-2,offsety+2,(htr+rod_base)/2);
+          cylz (rod_hold,htr+rod_base,   rod_space/2);  
           cylz (12,1,                rod_space/2);       
           cylz (12,9,  fix_space/2,0);
+          cylz (1,9,   fix_space/2,13.5);
         } 
         tsl (rodrd,7)
           hull() // triangle rods extension
             rotz(30) {
               cyly (10,10.5+rodextend,    dec,2-16.5-rodextend, rodht);  
-              cyly (10,10.5,    dec-6,2-16.5+1, rodht);  
+              cyly (10,12.5,    dec-6,2-16.5+1, rodht);  
               cubey (6,10.5+rodextend,2,  dec,2-16.5-rodextend,1); 
               cubey (6,rodextend,4,  dec-4,2-16.5-rodextend,2); 
               cubey (6,2,4,  dec-4-7,2-16.5+2,2); 
             }
-        hull() {
-          cyly (12,-0.1, wall_space/2,14,6);  
-          cylz (1,12,   wall_space/2,11);   
-          cubey (10,8,2, wall_space/2-8,6,1);
-          cylz (12,9,  fix_space/2,0);
-        } 
-        cyly (12,-3.5,     wall_space/2,14,6);  
+         hull() {
+          cconey(15,10, -3.5,1.6,  wall_space/2,14,15);
+          cubey (18,-3.5,2.4,      wall_space/2-7,14,1.2); // bottom 
+        }     
       } 
       cubez (40,2,scr+6,  0,13,0); // top face
       cubey (82,14-offsety,2.5,  0,offsety,1.25); // bottom
-      cubey (wall_space+6,-3.5,2.4,  0,14,1.2); // bottom
+   *   cubey (wall_space+6,-3.5,2.4,  0,14,1.2); // bottom
       cconez (15,11,2,4.5, 0,belt_axis);
     } //::: then whats removed :::
     dmirrorx()  {
       cylz (rod_dia,25, rod_space/2,0,rod_base);
       cyly (-4,66, 16,0,scr); //wall fix holes
-      cyly (-4,14, wall_space/2,8,6);
-      cconey (9.5,1,-5.5,-4.5, wall_space/2,6,6);
+      cone3y (9.4,4,-15,-2,8, wall_space/2,10.9,15);
       hull() {
         cylz (1.5, 25, rod_space/2-1,0,-1);
         cylz (1.5, 25, rod_space/2-12,0,-1);
       }
       cylz (-4,66,  fix_space/2,0); // floor attach
-      cconez (10,4, -2.5,-10,  fix_space/2,0, 10); 
-      tsl (rodrd,7,rodht)
+      cconez (10,4, -2.5,-10,  fix_space/2,0, 10.5); 
+      *tsl (rodrd,7,rodht)
         rotz(30) {
           cyly (-5,99,  dec);
           tsl (dec)
@@ -544,7 +564,22 @@ module foot2() {
               cylz (16,33,  -dec+15,22.5  ,-10);
             }  
         }
-        cut_rodface();  
+      tsl (rodrd,7,rodht) // biased cut for triangle rods seats
+        rotz(30) {
+          cyly (-5,22,  dec, -12);
+          tsl (dec)
+            hull() {
+              cylz (2,20,  5,-4,-10);
+              cylz (2,10 , -4,-4,-10);
+              cylz (2,10,  -4,-1.5  ,-10);
+              cylz (1,10,  14,15  ,-10);
+              duply (-2)
+                tsl (-4.5,-1,1)
+                  sphere (2);
+              cylz (2,1, 0,-4,8);
+            }  
+        }  
+      cut_rodface();  
     } 
     cylz (-4,33, 0,belt_axis);
     cylz (diamNut4,3.5, 0,belt_axis,-0.1, 6);
@@ -624,7 +659,7 @@ module foot() {
               cubey (6,10.5+rodextend,2,  dec, 2-16.5-rodextend, 1); 
               cubey (6,rodextend,4,       dec-4,2-16.5-rodextend,2); 
             }
-       hull() {
+        hull() {
           cyly (2,1,     12,13,1);
           cylz (12,6,  fix_space/2,1);
           cubez (20, 2,2.5, 25,13);
@@ -669,18 +704,19 @@ module foot() {
           cyly (-5,22,  dec, -12);
           tsl (dec)
             hull() {
-              cylz (2,33,  8.5,-4,-10);
-              cylz (2,33 , -4,-4,-10);
-              cylz (2,33,  -4,-1.5  ,-10);
-              cylz (1,33,  14,15  ,-10);
+              cylz (2,20,  8.5,-4,-10);
+              cylz (2,20 , -4,-4,-10);
+              cylz (2,10,  -4,-1.5  ,-10);
+              cylz (1,10,  14,15  ,-10);
+              cylz (2,1, 0,-4,8);
             }  
         }
     } 
     cylz (-4,33, 0,belt_axis); // tensioning nut hole
     cylz (diamNut4,3.5, 0,belt_axis,-0.1, 6);
     cubey (150,10,150, 0,14); // cut face
-    duplz (40)
-      cyly (-3,44, 0,10,10); // positioning hole
+    duplz (35)
+      cyly (-3,44, 0,10,15); // positioning hole
   }  
 }
 

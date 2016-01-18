@@ -11,7 +11,7 @@ Part 1 : Assembly, only for information
 Printing without support, some bridging, so temperature shall be not too high 
 (test parts in COLORED PETG at 280°C)
 Part 2 : effector base, print in 0.3mm layers, fill-in honeycomb 75%
-Part 3 : hotend support, print in 0.2~0.25 mm layer, fill-in honeycomb 50%
+Part 3 : hotend support, print in 0.2 mm layer, fill-in honeycomb 50%
 On the hotend support, some cleaning with a cutter is needed, notably to make room for the hotend fins. 
 Part 4 : Cable attach, on effector and on printer top
 Effector offset is 28mm. Arm space is 58 mm.
@@ -31,8 +31,8 @@ Note that this are the same screws as used to attach the extruder on its plate.
 
 qpart = 1;
 dia_ball = 5.95; //real ball diameter.  Ball hole programmed is 0.15mm over this diameter
-ballplay = 0.2; // extra diameter on ball sockets
-holeplay = 0.15; // extra diameter on ALL cylinders 
+ballplay = 0.16; // extra diameter on ball sockets
+holeplay = 0.14; // extra diameter on ALL cylinders 
 hotdia  = 15.8;
 hotring = 11.8;
 ballSocketExt= 1.1; // ball socket extension over medium plane
@@ -42,6 +42,8 @@ if (qpart) {
      rotz(60) hotsup(); 
      hotend();
      acc();
+    * color ("white") cubez (100,100,-1, 0,0,-31);
+     *cylz (5,22, 25,-15,-31);
   }  
   else if (qpart==2) effsq(); // effector base
   else if (qpart==3)  rot(180) hotsup();  // upside/down support for printing  
@@ -72,7 +74,7 @@ wire_space= 46;
 diamNut3  = 6.1;
 effvoffset= 0; //effector vertical articulation (ball center) offset from bottom effector plane (positive->up) . not taken into account here where ref plane is ball center
 
-ep_duct = 1.2; // duct thickness (not used everywhere)
+ep_duct = 1; // duct thickness (not used everywhere)
 
 topsup = 12; //top of hotend support
 fanht  = 15-22.5;
@@ -172,21 +174,26 @@ module effsq() { // effector main structure
 
 module hotsup() { // hotend support
   ductht  = topsup-17;
-  hts = 41;
+  hts = 42;
   dthk = 2*ep_duct;
   gaskthk = 1.5;
   module centhole() {
     hull() {
-      cylz(27,-5, 0,0, bottomsup);
-      dmirrorx(){
-        cylz(23,-1,   2,0, bottomsup-10);
-        cylz(18.5,-2, 2  ,0, topsup-40);
-      }  
+      cylz(47,-5, 0,-11.5, bottomsup);
+      cylz(47,-1, 0,-15.5, topsup-35);
+      cylz(13.5,-1,  0,0.75, topsup-41);
     }
-    cubez (40,40,-40, 0,-15,topsup-25); 
-    cylx (-37,80, 0,-10, topsup+hotpos-2, 60); 
-    rot (-15)
-      cubez (50,50,-20, 0,0,topsup-36); 
+    cubez (50,40,-40, 0,-22,topsup-25);
+    hull() 
+      duplz (5)
+        cylx (-31,80, 0,-9, topsup+hotpos-2, 60); 
+    
+    cubez (50,50,-20, 0,0,topsup-41.5); // flat cut
+    rot (0) // reclined inside cut
+      hull() 
+        dmirrorx ()
+          rotz (18)
+            cyly (15,18, 11, -11,topsup-47.5);
     dmirrorx()
       rotz (24)  //hotend screw room
         cconez (8,3, -4,4,  12,0,bottomsup);
@@ -205,17 +212,19 @@ module hotsup() { // hotend support
           hull() {
             cylz (26,-1, 0,17,topsup);
             dmirrorx() {
-              cylz (12,-3,  13.5,11.5,topsup -10); 
-              cylz (10,-3,   13.5,20,topsup -10); 
+              cylz (14,-3,   12.5,10.5,topsup -10); 
+              cylz (14,-3,   11.5,19,topsup -10); 
               
-              cylz (12,-6,   13,11,topsup -18); //?? cut internals accordingly
-              cylz (10,-6,   9,21,topsup -18); 
+              cylz (14,-6,   12,10,topsup -18); //?? cut internals accordingly
+              cylz (14,-6,   7,19,topsup -18); 
               
-              cylz (7, -0.1, 14, 9,topsup -hts+10); 
-              cylz (15,-0.1, 8.5,17,topsup -hts+10); 
+              cylz (14,-0.1, 14.5, 7,topsup -hts+11); 
+              cylz (20,-0.1, 10, 14.5,topsup -hts+11); 
+               
+              cylz (26,-1,           9,9,topsup -hts+7); 
+              duply(-5) cylz (26,-1, 8,5.5,topsup -hts+3.5); 
+              duply(-5) cylz (26,-1, 6,  0,topsup -hts); 
               
-              cylz (26,-1,   6,9,topsup -hts+5); 
-              cylz (20,-1,   5,6,topsup -hts); 
             }
           }
           
@@ -223,17 +232,18 @@ module hotsup() { // hotend support
         hull() {
           cylz (23,-0.5, 0,17,topsup+0.1);
           dmirrorx() {
-            cylz (12-dthk-0.2,-3,  13.5,11.5,topsup -10.5); 
-            cylz (10-dthk-0.2,-3,   13.5,20,topsup -10.5); 
+            cylz (14-dthk,-3,  12.5,10.5,topsup -10.3); 
+            cylz (14-dthk,-3,  11.5,19,topsup -10.3); 
               
-            cylz (12-dthk,-6,   13,12.5,topsup -18); //?? cut internals accordingly
-            cylz (10-dthk,-6,   9,21,topsup -18); 
+            cylz (14-dthk,-6,      12,10,topsup -18); 
+            cylz (14-dthk,-6,      7,19,topsup -18); 
               
-            cylz (7-dthk-1,-0.1, 14,9,topsup -hts+10); 
-            cylz (15-dthk,-0.1,  8.5,17,topsup -hts+10); 
+            cylz (14-dthk,-0.1,   14.5,7,topsup -hts+11); 
+            cylz (20-dthk,-0.1,   10,14.5,topsup -hts+11); 
             
-            cylz (26-dthk,-9,  6,9,topsup -hts+13); 
-            cylz (20-dthk,-9,  5,6,topsup -hts+7.9); 
+            cylz (26-dthk,-1,              9,  9,topsup -hts+7);
+            duply(-5) cylz(26-dthk*1.2,-1, 8,5.5,topsup -hts+3.5);
+            duply(-5) cylz(26-dthk*1.5,-1, 6,  0,topsup -hts-0.1); 
           }
         }
         centhole();  
@@ -241,18 +251,18 @@ module hotsup() { // hotend support
       difference() { // central part
         union() {
           intersection() {
-            cylx (-40,38,   0,-10, bottomsup-2, 60);
+            hull() 
+              duplz(5)
+                cylx (-33.5,50,   0,-9, bottomsup-2, 60);
             hull() {  
-              cyly (-38,99,  0,0, bottomsup, 60);
-              cyly (-38,99,  0,0, bottomsup-4, 60);
+              cyly (-39,99,  0,0, bottomsup+5, 60);
+              cyly (-43,99,  0,0, bottomsup-7, 60);
             }  
           }  
           hull() {
-            cylz(30,-5, 0,0, bottomsup-0.1);
-            dmirrorx(){
-              cylz(26,-1,   2,0, topsup-35);
-              cylz(21.5,-1, 2,0, topsup-40);
-            }  
+            cylz(49.5,-5,     0,-11.5, bottomsup-0.1);
+            cylz(49.5,-1,     0,-15.5, topsup-35);
+            cylz(16.5,-1,     0,0.75, topsup-41);
           }
           hull() {
             cylz (30,1.5, 0,0,bottomsup,    50);
@@ -262,7 +272,7 @@ module hotsup() { // hotend support
         centhole();  
         dmirrorx() {
           rot (-12,0,18)
-            cubez (40,40,-40, 9.5,-19.3,topsup);          }
+            cubez (40,40,-50, 9.5,-21.3,topsup);          }
       }
       dmirrorx() { // 
             difference() {  // arms
@@ -330,7 +340,7 @@ module hotsup() { // hotend support
       hotend_screws ();  
       //dmirrorx() cylz (5.5,-6, 7.5,-6, topsup);  // cable attach
     } //::: then whats removed :::
-    cylz (17.5,-55, 0,0, topsup-topfin); // fin space
+    cylz (17.5,-22, 0,0, topsup-topfin); // fin space
     tsl (0,0,ductht)
       duct_ht_outlethole();
     tsl (0,17,topsup+0.1)
@@ -341,7 +351,7 @@ module hotsup() { // hotend support
     hotend_screws (true);
     dmirrorx() cylz (2,-6.5, 6.5,-6, topsup+1);  // cable attach holes
   } 
-  duct();  
+ duct();  
 }
 
 
@@ -349,31 +359,31 @@ module hotend_screws (hole=false) { // absolute position
   di = (hole)?3.2:7;  
   lg = (hole)?55:25; 
   rc = (hole)?2:0;  
-  
   difference() {
     union() {
-      tsl (0,0,topsup-25)
-        rot (8)
+      tsl (0,-0.2,topsup-25)
+        rot (8) // holes near duct
           dmirrorx() 
             rotz (24)  
               hull() {
-                cylz (di,lg+2, 12,0,-1);
+                cylz (di,lg+2, 11.8,0,-1);
                 if (!hole) {
                   cylz (1,lg+3, 9, 5, -1.5);
                   cylz (1,lg+3, 14,2.3, -1.5);
                   cylz (1,lg+2, 9, -3.5, -1);
                 }  
               } 
-      difference() {  
+      difference() {  // holes near fan
+        rot (3)
         dmirrorx() {   
-          tsl (10.6,-5.6,topsup-25-rc-1)
+          tsl (10.8,-6.2,topsup-25-rc-1)
             rot (0,5) cylz (di,lg);
          // rotz (-28) cylz (di,lg,  12,0,topsup-25-rc); // ref of position
         }  
         if (!hole)    
           cubez (20, 10,lg+2,  0,-6, topsup-25-1);
       }
-    }  
+    } //::: then  whats removed :::
     if (!hole)   // cut top/bottom pylon faces 
       duplz (-25-10)
         cubez (50,50,10,0,0,topsup);  
@@ -460,6 +470,11 @@ module duct() { // hotend duct - absolute position
   difference () { // cone above fins
     cconez (8,17, -topfin,0, 0,0,topsup);
     bowden_space();
+    tsl (0,0,ht)  // flatten the cone to the outlet
+      hull() dmirrorx() {
+        cyly(0.5,1,  6.2,  28.5,9.65);
+        cyly(0.5,1,  6.3,  6.5, 8.25);
+      }  
   } 
 }
 
@@ -472,13 +487,15 @@ module duct_ht_outlethole() {
   delta = washerthk-1; // space 1mm atop fins - hotend lowered by washer
   //cylz  (17,-15.2, 0,0,lctop-topfin);
   hull() { // outlet
-    cylz  (13.2,-2, 0,0,lctop-topfin-0.5);
+    cylz  (13.2,-1, 0,0,lctop-topfin-1);
     cubez (13,1,-2,0,11.5,lctop-topfin-13.5+delta);
     dmirrorx() {
       cyly(0.5,1,  6.2,  28.5,9.65);
+      cyly(0.5,1,  6.3,  6.5, 8.25);
       cyly(0.5,1,  6.2,  28,   -8.2);
       cyly(0.5,1,  2,  25.5,-12.8);  
-      rot(-16)   // cut outlet flat for better bridging
+      
+*     rot(-16)   // cut outlet flat for better bridging
         rotz (10.5) 
           cyly(1,28,  5.48,0,1);
     }
@@ -500,7 +517,7 @@ module hotend() {
     tsl (0,0,topsup){
       cylz (17,-18, 0,0, -topfin-0.5);  
       cylz (19,-1.2, 0,0,-18-topfin-0.5);  
-      cconez (4,1,-1, 16, 0,0, -18-topfin-0.5);  
+   #   cconez (4,1,-1, 16, 0,0, -17-topfin-0.5);  
       rotz (-75)
         cubez (16,14,8, 4.5,2.8, -30-topfin-0.5);
     }  
