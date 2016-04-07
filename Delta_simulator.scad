@@ -95,7 +95,7 @@ txtzpos = 2.2*beam_int_radius;
 txtangle= -60;
 
 //== data set included below will supersedes above data 
-include <data_HXM.scad>  //- Data set for Hexagon minimum by PRZ
+include <data_Lily_F.scad>  //- Data set for Hexagon minimum by PRZ
 //=====================================================================================
 //$details=true;
 
