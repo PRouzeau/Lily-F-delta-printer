@@ -115,6 +115,7 @@ basewd = 370; // base/top panel width
 basedp = 320; // base/top panel depth
 basewoffset = 0;  // base/top panel side offset
 basedpoffset = 4; // base/top panel front offset
+wallsup=0;
 
 /* Alternative dataset with same components Lily F 139/500 
 //  -> usable diameter 186 mm H centre ~ 225mm, periphery 215mm - base slightly enlarged
