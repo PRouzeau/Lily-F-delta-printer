@@ -130,8 +130,8 @@ ye=e_radius*sin(e_angle);   //*/
 //echo_camera();
 
 //====================================================================
-view(); //The animation will run around a cylinder based on the maximum reachable radius at the middle of the columns. If arms are sufficiently long, it will bang on columns, belts, etc.
-*view_circle (working_dia,0); // view_circle (dia, height) - if off-limits - display may fail
+*view(); //The animation will run around a cylinder based on the maximum reachable radius at the middle of the columns. If arms are sufficiently long, it will bang on columns, belts, etc.
+view_circle (working_dia,0); // view_circle (dia, height) - if off-limits - display may fail
 // view_helix (); 
 
 //--- dimensions calculations --------------------------------------------------
@@ -194,7 +194,8 @@ module view () {//if no fixed xe,ye,ze, viewing trajectory and other stuff as a 
 }
 
 module view_circle (dia, height) { //rotation on a given diameter at a set height
-  simul (dia/2*cos($t*360),dia/2*sin($t*360),height);//simulate position (x,y,z) 
+  anim_angle=$t*360-80;
+  simul (dia/2*cos(anim_angle),dia/2*sin(anim_angle),height);//simulate position (x,y,z) 
 }
 
 module view_helix () { //-- simple helix on limits, from top to bottom
@@ -374,7 +375,7 @@ extrusionw = ($extrusionwd)? $extrusionwd:extrusion;
     sprot = $spool_rot? $spool_rot:[0,0,0];  
     sptsl = $spool_tsl? $spool_tsl:[0,0,htotal+spool_thk/10];    
     if(spool_diam)
-       rotate (sprot) translate (sptsl) spool();
+       translate (sptsl) rotate (sprot) spool();
     if ($bSide) buildSides(); // allow specific sides to be built - at the end if transparent    
   }  
 }
@@ -459,14 +460,14 @@ module rot120 (a=0) {
     rotate([0,0,i+a]) children();
 }
 
-module duplx (dx) { // duplicate an object at distance dx
-  children();
-  if (dx) tsl(dx) children();
+module duplx (dx,nb=1, startx=0) { // duplicate an object at distance dx
+  for (i=[0:nb])
+    tsl (dx*i+startx) children();  
 }
 
-module duplz (dz) { // duplicate vertically an object at distance dz
-  children();
-  if (dz) tsl(0,0,dz) children();
+module duplz (dz,nb=1, startz=0) { // duplicate vertically an object at distance dz
+  for (i=[0:nb])
+    tsl (0,0,dz*i+startz) children();
 }
 
 module dmirrorx() { // duplicate and mirror on x axis
