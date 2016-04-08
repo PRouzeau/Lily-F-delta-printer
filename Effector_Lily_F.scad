@@ -29,7 +29,7 @@ The hotend shall be attached with 4 M3x35 countersunk bolts, in STAINLESS STEEL 
 Note that this are the same screws as used to attach the extruder on its plate.
 */
 
-qpart = 1;
+qpart = 0;
 dia_ball = 5.95; //real ball diameter.  Ball hole programmed is 0.15mm over this diameter
 ballplay = 0.16; // extra diameter on ball sockets
 holeplay = 0.14; // extra diameter on ALL cylinders 
@@ -45,10 +45,10 @@ if (qpart) {
     * color ("white") cubez (100,100,-1, 0,0,-31);
      *cylz (5,22, 25,-15,-31);
   }  
-  else if (qpart==2) effsq(); // effector base
-  else if (qpart==3)  rot(180) hotsup();  // upside/down support for printing  
+  else if (qpart==30) effsq(); // effector base
+  else if (qpart==31)  rot(180) hotsup();  // upside/down support for printing  
   else if (qpart==4) hotsup(); // support for simulation , normal position
-  else if (qpart==5) {  // cables retainers
+  else if (qpart==32) {  // cables retainers
     cablem();
     duplx (15,2) tsl (30) cablem2();
   }

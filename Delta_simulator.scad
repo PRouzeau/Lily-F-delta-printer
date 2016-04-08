@@ -91,7 +91,7 @@ $vpt=camPos?[215,-90,420]:undef; //camera translation  */
 txtsize = beam_int_radius/16;
 txtxpos = 0.8*beam_int_radius;
 txtypos = 1.22*beam_int_radius;
-txtzpos = 2.2*beam_int_radius;
+txtzpos = 320;
 txtangle= -60;
 
 //== data set included below will supersedes above data 
@@ -229,7 +229,7 @@ module delta_cal (x, y, z, rot) { // calculation of arms angles and display
     txta = str("Angles: vertical: ",90-round(h_angle*10)/10, " horizontal: ", round(z_angle*10)/10);
     ltxtsup = $dtxt? len($dtxt):0;
     rot (0,-10,txtangle-move_rot) tsl (0,$xtxt)
-      tsl (txtxpos, txtypos,txtzpos-txtsize*31-ltxtsup*1.5)
+      tsl (txtxpos, txtypos,txtzpos-txtsize*37.5-ltxtsup*1.5)
         rot (90,0,90) color("black")
           textz(txta, txtsize*0.85, 2, false);
   }

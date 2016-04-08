@@ -1,16 +1,17 @@
 include <PRZutility.scad>  include <X_utils.scad>
-// Data Set for Delta printer -LilY - Jan-april 2015
+// Data Set for Hexagon Minimum Delta printer -LilY - January 2015
 // To be build from scratch (Lily 'S'), or with  standard Fisher components (Lily 'F')
 // Copyright Pierre ROUZEAU AKA 'PRZ'
 // Program license GPL 2.0
 // documentation licence cc BY-SA and GFDL 1.2
 // Design licence CERN OHL V1.2
 
-part=0;
+part=5;
 xpart=0;
 
-thkglass=4; // glass thickness for glass retainers
-//$noTop = true;
+thkglass=3; // glass thickness for glass retainers
+$noTop = true;
+$noCover =true;
 $boxed = true;
 
 if (part) { // set part =0 (no part) for delta simulation
@@ -38,17 +39,12 @@ if (part) { // set part =0 (no part) for delta simulation
   else if (part==16) duplx(55) hiding_plate(); // Aesthetic: hiding screws
   else if (part==17) duply(20) door_pad();   
     
-  else if (part==19) ref_stick();  // print the reference stick 
-  else if (part>50 && part<60) {
-    $details=true;
-    projection() 
-      rot (0,90) panel(part-50); // for panels - holes  
-  }  
-  else if (part>=60 && part<70) {
-    $details=true;
-    projection() 
-      panel(part-50); // for panels - holes        
-  }  
+  else if (part==19) ref_stick();  // print the reference stick
+  else if (part>50 && part<60)  projection() 
+    rot (0,90) panel(part-50); // for panels - holes  
+  else if (part>=60 && part<70) projection() 
+    panel(part-50); // for panels - holes      
+  else if (part==201) template(); //holes in base plate to be exported to DXF
 }
 
 Delta_name = str("Lily F 131/500 by PRZ");
@@ -88,7 +84,7 @@ top_panelthk =18;
 basethk  = 18;
 panelthk = 18; // structural sides
 boxpanelthk = 10; //closing panels, door, etc.
-cover_panelthk =10; // cover over steppers
+cover_panelthk = 10; // cover over steppers
 
 car_hor_offset= 16; // horizontal offset of the articulation (/ rod axis)
 hcar = 16; // height of the carriage
@@ -111,9 +107,8 @@ corner_offset=14;
 hotend_offset = 6;
 hotend_dist = 17; // for STL htend file import position
 
-beltwd=6; // belt width
 belt_dist = 2; // belt FACE distance with rod axis
-belt_axis = beltwd/2-belt_dist; // belt axis distance to rod axis
+belt_axis = 3-belt_dist; // belt axis distance to rod axis
 //echo (belt_axis =belt_axis);
 motor_offset = -8; // face of the motor distance with the rod axis
 motor_voffset = -23; //motor axis position/bottom of top plate
@@ -156,129 +151,53 @@ basedpoffset = 4; // base/top panel front offset
 // side plate dimensions 
 splatewd = 150; // before alternative datasets
 $subbase=false;
-windoorwd = 150;
-windoorht = 400;  
   
-htsub=0; // below structure height
-httop = 0; // motors on top -> 60
+htsub=0;  
 
-toprodht = htotal-13+motor_voffset;
-botrodht = 4.25; // with M4 threaded rods
-posrod = rod_space+9.65; // the positioning rod axis crossing
-posrodaxo = 70.1; // offset along axis of positioning rods
-posrod_offset = 12; // offset beween bottom and top positioning rods
-
-//belt_dist=8.5;
-
-//* next paragraph are alternative geometry
-//- add a leading '/'  to the first line, that will uncomment whole paragraph
-// and the data will supersede above data
-
-//* Alternative dataset with same components is HXMF 139/500 - Fisher kit based
-//  -> usable diameter 186 mm H centre ~ 225mm, periphery 215mm - base slightly enlarged
+//* Alternative dataset for large printer with 320/1700 - 
+//  rod diam 20 may lack stiffness for a printer that size. However, such dimensions may be used with large diameter nozzles and thick layers, which are limited in speed, so that may be acceptable
 // uncommenting the block will supersede former data  
-Delta_name = str("Lily F 139/500 by PRZ");
-beam_int_radius = 139;
-arm_length = 204;
-mini_angle = 23; 
-basewd = 380;
-basedp = 340;
-basedpoffset = 6;
-htotal=500;
-$wallsup = 0;
-rod_base  = 46;
-$ht_tens = 72;
-hotend_vert_dist = 31;
-$bedDia=200; 
-//*/
-
-/* Alternative dataset with same components HXMS 139/530 - Scratch build
-//  -> usable diameter 186 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
-// uncommenting the block will supersede former data  
-Delta_name = str("LilY S 139/530 by PRZ");
-beam_int_radius = 139;
-arm_length = 204;
-mini_angle = 23; 
-basewd = 390;
-basedp = 330;
-basedpoffset = 1;
-htotal=530;
-$wallsup = 70;
-posrod_offset = 5;
-rod_base= -0.01;
-rod_space = 58;
-$ht_tens = 50;
-hotend_vert_dist = 40;
-$bedDia=200; 
-splatewd = 160;//
-
-//*/
-
-/* Alternative dataset with same components HXMS 172/630 - Scratch build
-//  -> usable diameter 188 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
-// uncommenting the block will supersede former data  
-Delta_name = str("Lily 'S' 172/630 by PRZ"); // shall use 10 or 12 mm rods, not designed yet
-beam_int_radius = 172;
-arm_length = 266;
+Delta_name = str("Lily 'X' 320/1700 by PRZ"); // shall use 10 or 12 mm rods, not designed yet
+beam_int_radius = 320;
+arm_length = 520;
+arm_space = 100; // space between arm - shall be as large as possible
+dia_arm=10;
+dia_ball=12;
+wire_space = 80;
 mini_angle = 22; 
-basewd = 460;
-basedp = 400;
-basedpoffset = 6;
-htotal = 630;
-rod_dia = 10;
-rod_space = 66;
-//rod_space = 44;
-lbearing_dia = 19;
-$wallsup = 90;
-rod_base = 2;
-$ht_tens = 70;
-hotend_vert_dist = 40;
-$bedDia = 260; 
-car_hor_offset= 18;
-splatewd = 180;
-$subbase =true; // structure below floor for spool & power supply
-htsub = 120; // height of the sub-base -could be whatever you want, depending spool you use + tensioner clearance
+basewd = 800;
+basedp = 700;
+basedpoffset = 20;
+ball_dia=12;
+htotal = 1700;
+rod_dia = 20;
+rod_space = 80; 
+
+lbearing_dia = 32; // rod Bearing external diameter
+hcar = 32;  // carriage height
+corner_offset=24; // clearance for carriage
+$wallsup = 210;  // height of rod support
+rod_base = 2; // distance between floor and rod base
+$ht_tens = 70; // height of belt tensioner
+hotend_vert_dist = 40; // distance between hotend nozzle and effector ball articulation plane
+$bedDia = 500; // bed diameter
+car_hor_offset= 33;
+eff_hor_offset= 45; 
+splatewd = 320;
+$subbase =false; // structure below floor for spool & power supply
+htsub = 0; // height of the sub-base -could be whatever you want, depending spool you use + tensioner clearance
+
+//stext = [str("Angle length: ",round(htotal+27+top_panelthk), " mm")];
+stext = "-";
+
 spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
-$spool_tsl = [115,-85,-120];
+$spool_tsl = [285,220,452];
+
+mirrorx() //2nd spool at bottom 
+  translate ($spool_tsl) rotate ($spool_rot) 
+      spool("red");
+
 //*/
-
-/* Alternative dataset with same components HXMS 188/800 - Scratch build
-//  -> usable diameter 286 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
-// uncommenting the block will supersede former data  
-Delta_name = str("Lily V 188/800 by PRZ"); // future, with 20x40 V-Slot profiles
-//Movement part design to be done...
-// Effector will be the D-Box effector
-beam_int_radius = 188;
-arm_length = 305;
-mini_angle = 22; 
-arm_space= 84;  // space between the arms
-wire_space= 68; // space between the wires
-basewd = 520;
-basedp = 450;
-basedpoffset = 6;
-htotal=800;
-$wallsup = 100;
-$ht_tens = 80;
-hotend_vert_dist = 40;
-$bedDia=300; 
-car_hor_offset= 18;
-splatewd = 180;
-rod_space=0;
-dia_arm=6;
-dia_ball =8;
-corner_offset=20;
-frame_corner_radius=0; 
-belt_dist=8.5;
-motor_offset = -12; 
-eff_hor_offset= 30;
-
-splatewd = 230;
-basedpoffset = 2; // base/top panel front offset
-motor_voffset = panelthk+23;
-$subbase =true; // structure below floor for spool & power supply
-htsub = 120; // height of the sub-base -
-spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
-$spool_tsl = [115,-100,-120];
 
 //*/
 
@@ -302,29 +221,55 @@ module cyltest(dia) {
   dpshift = boxpanelthk*0.577; //panel seated on back panel, so shift from axis
   sd_doorwd = (splatedist+panelthk) + ((splatedist+panelthk)*0.5-cos(30)*splatewd/2-(panelthk-boxpanelthk)/2);  //Side door width
   front_doorwd = platewd+panelthk*2*cos(30);
-  backpanelht = htotal + httop+ ceil(((htsub)?htsub+basethk+((httop)?top_panelthk:0):0)/5)*5; // back panel height
+  backpanelht = htotal + 60+ ceil(((htsub)?htsub+basethk+top_panelthk:0)/5)*5; // back panel height
   midpaneldp =  ceil((splatedist + platedist+panelthk/2+boxpanelthk)/10)*10; // if there is a sub-box, depth of mid panel bolted on back panel
 
   toprodlg =round(reference_l+39+10); 
   botrodlg =($wallsup)?round(reference_l+31+10):round(reference_l+29+10); 
-  $dtxt = [ // $dtxt shall be an array
-    str("Struct. plates: ",round(splatewd),"/",round(basewd-30),"x",htotal, "x",panelthk," mm"),
-    str("Box plates: 2x ",round(platewd),"x",htotal, "x",boxpanelthk," mm"),
+
+  $dtxt = concat([ // $dtxt shall be an array
+    str("Struct. panels: ",round(splatewd),"x",htotal, "x",panelthk," mm"),
+    str("Back panel: ",round(basewd-30),"x",backpanelht, "x",panelthk," mm"),
+    str("Box panels: 2x ",round(platewd),"x",htotal, "x",boxpanelthk," mm"),
     str("Front/sd. doors: ",round(platewd),"/",round(sd_doorwd),"x",htotal, "x",boxpanelthk," mm"),
-    str("Base plate: ",round(basedp)," x ",round(basewd),"x",basethk," mm"),
-    str("Rod length: ",round(htotal-rod_base-28), " mm"),
+    str("Base plate: ",round(basedp)," x ",round(basewd)," x ",basethk," mm"),
+    "","",
+    str("Mid&top plate: ",midpaneldp," x ",round(basewd)," x ",basethk," mm"),
     str("Threaded rods: ",botrodlg, "/",toprodlg," mm"),
-    str("Reference base: ",round(reference_l), " mm"),
-    "Machine licence: CERN OHL V1.2"
-  ];
+    str("Reference base: ",round(reference_l), " mm")
+    ],
+    stext,
+    "Machine licence: CERN OHL V1.2" 
+   );
   
-  txtzpos = 320; // position of the message panel top
+  
+  
+beltwd=6;
+beltoffset = -$bdist + beltwd/2; //belt CENTER offset is negative, belt is within the reference plane
+//belt_dist=8.5;
+
+
+module template() { // to locate holes for centering the structure
+  rotz(-30)
+    projection()
+      difference() {
+        rotz(30) cubez (basewd,basedp,1,  basewoffset,basedpoffset); // base plate
+        rot120() {
+          cylz (-4, 66,  beam_int_radius+belt_axis); // tensioner /belt access
+          dmirrory() cylz (-4, 66,  splatedist+panelthk/2, splatewd/2-25); // panel screws
+        }  
+       rotz(120) dmirrory() cylz (-4, 66,  splatedist+panelthk/2, basewd/2-15-25);
+        cylz (-3, 66);
+        rot120() dmirrory()  
+          cylz (-4,66,  beam_int_radius+7.5,22); // top support screws
+      }  
+} 
 
 //*
 $bCar=true; // allow the program to use below module instead of standard carriage
 // $ variable does not give warning when not defined
 module buildCar() { // modify to allow excentrate articulation (lowered) ??
-  dcar = lbearing_dia+6; // 15 is bearing diam LM8UU = d15x24 - LM10UU d19x29 - LM12UU d21x30 - LM20UU d32x??
+  dcar = 15+6; // 15 is bearing diam LM8UU = d15x24 - LM10UU d19x29 - LM12UU d21x30
  * color(moving_color)
   tsl (0,0,-car_vert_dist) {
     hull () 
@@ -335,15 +280,19 @@ module buildCar() { // modify to allow excentrate articulation (lowered) ??
   }
   color(moving_color)
     mirrorz() carriage();
-  silver() if (rod_space) { // linear bearings LM8UU & LM8LUU
+  color ("silver") if (rod_space) { // linear bearings LM8UU & LM8LUU
     cylz (-15,24, rod_space/2,0,-7.5);
     cylz (-15,45, -rod_space/2,0,-7.5-10.5);
   }
 } //*/
 
 $bSide = true; // setup the below side panel *in addition* to frame
+
 module buildSides() {
-  // motor support 
+  rodrd = rod_space/2+4;
+  rodht = -10;
+  rod_offset = ($wallsup)?5:12;
+   // motor support 
   rot120() tsl (0,beam_int_radius,htotal) {
     if (!$noTopSup)
       color(struct_color) 
@@ -356,17 +305,27 @@ module buildSides() {
         }  
         else   
           tslz (motor_voffset) motor_support();
-    tsl (0,posrod) // positioning rods
-      rotz(30) {
-        gray() { 
-          cyly (4,-toprodlg,  // top rod       
-            0,-posrodaxo+25,toprodht-htotal); 
-          cyly (4,-botrodlg, // floor rod
-            posrod_offset,-posrodaxo+20,botrodht-htotal); 
-        }
-        red()//measurement stick:176 for beam_int_radius 131
-          cyly (3,-reference_l,  5,-posrodaxo, toprodht-htotal);
-      }  
+    color("gray")
+      if ($isAngle) {
+        rotz(30)  
+          duplz (-htotal-top_panelthk-4)
+            cyly (4,-toprodlg,  14,-26,11+top_panelthk); 
+      }
+      else     
+        tsl (rodrd,7,rodht) // frame rods, length to be calculated ??
+          rotz(30) { 
+            cyly (4,-toprodlg,          1,6,-8); // top rod - offset = 1
+            cyly (4,-botrodlg, rod_offset,1,-htotal+23+10+4.5); // floor rod
+          } 
+    color("red")//measurement for stick length:  176 for beam_int_radius 131
+      if ($isAngle) {
+        rotz(30)  
+          cyly (4,-reference_l,  17,-48.7,11+top_panelthk); 
+      }
+      else 
+        tsl (rodrd+5.5,10.3,-16) // y was 8 for lily F
+          rotz(30)  
+            cyly (3,-reference_l,  0,-19.1+2);
   } 
   PS_shift = platewd/2-dpshift-40*0.5-58/2 -3; // 40 thk PS, 58 width PS
   yboard = -platewd/2 -boardwd*sin(30)-boxpanelthk*1.155 -10; 
@@ -426,8 +385,8 @@ module buildSides() {
   }
   if (!$noTop)  //top plate as last panel for transparency
     color (panel_color) tslz (htotal) panel(15);
-  if (!$noCover && httop) 
-    color (panel_color) tslz (htotal+top_panelthk+httop) panel(16); //top plate as last panel for transparency    
+  if (!$noCover) 
+    color (panel_color) tslz (htotal+top_panelthk+60) panel(16); //top plate as last panel for transparency    
 }
 
 module panel (num){
@@ -435,53 +394,42 @@ module panel (num){
   scrsp2 = ceil(basewd/3.8/5)*5; 
   module botplatedrill() {
     dmirrorx() 
-      duply (scrsp,3) 
-        cylz  (-4,55, basewd/2-100-panelthk/2,-scrsp*1.5);
+        duply (scrsp,3) cylz  (-4,55, basewd/2-100-panelthk/2,-scrsp*1.5);
       dmirrorx() { // sub base bolting
-        duplx (scrsp2,1) 
-          cylz (-4,55, scrsp2*0.5, splatedist+panelthk/2);
+        duplx (scrsp2,1) cylz (-4,55, scrsp2*0.5, splatedist+panelthk/2);
         duplx (-50)
           cylz (-4,55, basewd/2-35,splatedist-230-panelthk/2);
       }  
   }
   module structdrill(top=false) {
-    rot120(30) { // structural panels screws
-      dmirrory() cylz(-4,55, -splatedist-panelthk/2,splatewd/2-18);
-      cylz(-4,55, -splatedist-panelthk/2, (i>100)?30:-30);
-    }
+    for (i=[30, 120+30])
+      rotz(i) { // structural front panels screws
+        dmirrory() cylz(-4,55, -splatedist-panelthk/2,splatewd/2-20);
+        cylz(-4,55, -splatedist-panelthk/2, (i>100)?30:-30);
+      }
     rot120(-30) {
-      cylz ((top)?-20:-8,55, belt_axis+beam_int_radius);  //     tensioner /belt access   
-      if (top) 
-        if ($isAngle) 
-          tsl (beam_int_radius) {
-            diff() { // cut angle space
-              rotz(45) cubez (angleSize, angleSize,55, -angleSize/2,angleSize/2,-20);
-              cubex (-50,100,100, (-angleSize-angleThk)*0.707);
-            }  
-            rotz(-45) cylz(-6,55, carBBdia/2+4.5,-extSdFace+1.3);//switch rod    
-          }  
-        else  // rod based frame
-          dmirrory() 
-            cylz (-4,66, beam_int_radius+7.5,22);//top support screws 
+      cylz (-8,55, beltoffset+beam_int_radius);  
+    if (top && $isAngle) 
+      tsl (beam_int_radius) {
+        diff() { // cut angle space
+          rotz(45) cubez (angleSize, angleSize,55, -angleSize/2,angleSize/2,-20);
+          cubex (-50,100,100, (-angleSize-angleThk)*0.707);
+        }  
+        rotz(-45) cylz(-6,55, carBBdia/2+4.5,-extSdFace+1.3);//switch rod    
+      }  
     }
-    if (!$isAngle) 
-      rotz(90) dmirrory() // back panel
-        cylz (-4, 66,  splatedist+panelthk/2, basewd/2-15-25); 
-    cylz (-3, 66); // center
   }
   if (num==1) { 
     cubez (panelthk,splatewd, htotal); // struct front panel
-    if (httop)
-      cubez (panelthk, splatewd, httop, 
-        0,0,htotal+top_panelthk); 
+    cubez (panelthk, splatewd, 60, 0,0,htotal+top_panelthk); 
   }  
   else if (num==2) diff() {  // back panel  (rotated 90°)
     cubez (panelthk,basewd-30,backpanelht, 0,0,(htsub)?-htsub-basethk:0);
     if ($details) dmirrory() { 
       duplz (htotal+top_panelthk/2+basethk/2)
         duply (scrsp2-20,1) 
-          cylx (-4,99, 0,scrsp2*0.5, -basethk/2);
-      duplz (-150) cylx(-4,99, 0,basewd/2-100-panelthk/2,-35);
+          cylx (-4,55, 0,scrsp2*0.5, -basethk/2);
+      duplz (-150) cylx(-4,55, 0,basewd/2-100-panelthk/2,-35);
     }  
   }
   else if (num==3) cubez (boxpanelthk, platewd-dpshift, htotal); //left side panel
@@ -489,39 +437,28 @@ module panel (num){
     hlspace = 78;
     diff() { //closing side panel right with filtration holes -4 -
       cubez (boxpanelthk, platewd-dpshift, htotal);
-      //:::::::::::::::::::::::::::::::::::::
-      if ($details) tslz (htotal-55) {
-        ffanht = ($isAngle)?-335:-257; 
-        if ($isAngle) {
-          hlspace = 78;
-          duplz (-hlspace,3) dmirrory() { // filter holes
+      tslz (htotal-55)
+        if ($isAngle && $details) {
+          duplz (-hlspace,3) dmirrory() {
             cylx (-68, 55, 0,hlspace);
             cylx (-68, 55, 0,0);
           }  
-          duplz (-2*hlspace) dmirrory()  
+          duplz (-2*hlspace) dmirrory() {
             cylx (-4, 55, 0,hlspace/2, -hlspace/2);
-        }
-        else {
-          hlspace = 78;  
-          duplz (-hlspace,2) dmirrory() 
-            cylx (-68, 55, 0,hlspace/2);
-          duplz (-hlspace)  
-            cylx (-4, 55, 0,0, -hlspace/2);
-        }
-        tsl (0,25,ffanht) { // fan 
-          cylx (-80, 55);
-          dmirrory() dmirrorz() 
-            cylx (-4, 55, 0, 71.5/2, 71.5/2);
-        }
-      } // holes
+          }  
+          tsl (0,40,-335) {
+            cylx (-80, 55);
+            dmirrory() dmirrorz() 
+              cylx (-4, 55, 0, 71.5/2, 71.5/2);
+          }  
+        }  
     }
   }  
   else if (num==5 || num==6)   //side doors         
     diff() {
       u() {
         cubez(boxpanelthk, sd_doorwd, htotal);
-        if (httop) 
-          cubez(boxpanelthk, sd_doorwd, httop, 0,0,htotal+top_panelthk);
+        cubez(boxpanelthk, sd_doorwd, 60, 0,0,htotal+top_panelthk);
       }  //::::::::::::::::::::::::::
       cubez(50,sd_doorwd+20,5,  0,0,260); // cut door in half
       if (num==5)
@@ -534,29 +471,20 @@ module panel (num){
   else if (num==7) {// front door
     diff() {
       cubez (boxpanelthk, front_doorwd, htotal); 
-      //::::::::::::::::::::::
-      duplz (450,0) tsl (0,0,windoorht/2+30) // glass hole
+      duplz (450,2) tsl (0,0,230) // glass hole
         hull() dmirrory() dmirrorz() 
-          cylx(-20,55, 0,windoorwd/2-20,windoorht/2-20);
+          cylx(-20,55, 0,80,180);
     } 
-    if (httop)
-      cubez (boxpanelthk, front_doorwd, httop, 
-        0,0,htotal+top_panelthk); 
+    cubez (boxpanelthk, front_doorwd, 60, 0,0,htotal+top_panelthk); 
   }  
   else if (num==11) //base panel
     diff() {
       cubez (basewd,basedp,-basethk, 0,basedpoffset); 
-      //::::::::::::::::::::::::::
-      if ($details) 
-        if ($subbase)
-          botplatedrill();
-        else
-          structdrill(); 
+      if ($details) botplatedrill();
     }  
   else if (num==12) //mid panel
     diff() {
       cubey (basewd,-midpaneldp,basethk, 0,splatedist,basethk/2);
-      //:::::::::::::::::::::::::::::::::
       if ($details) botplatedrill();
       if ($details) structdrill();
     }  
@@ -571,12 +499,7 @@ module panel (num){
       } 
   else if (num==15) //top panel
     diff() {
-      if (httop) // clear back panel
-        cubey (basewd,-midpaneldp,top_panelthk,
-          0,splatedist, top_panelthk/2);
-      else // above back panel
-        cubez (basewd,basedp,top_panelthk, 0,basedpoffset); 
-      //:::::::::::::::::::::::::::::::::::::::  
+      cubey (basewd,-midpaneldp,top_panelthk, 0,splatedist, top_panelthk/2);
       dmirrorx() 
         rotz(30)  // structural front panels cut
           tsl (-splatedist-panelthk) cubex (-200, 600, 50);
@@ -623,7 +546,7 @@ module buildAllFrame() {
       tsl (beam_int_radius,0,$ht_tens) {
         if ($isAngle) {
           tensionerAngle(); 
-          tsl (belt_axis,0,-45) thumbwheelM4(); 
+          tsl (beltoffset,0,-45) thumbwheelM4(); 
         }  
         else         {
           tensioner(); 
@@ -672,6 +595,7 @@ module buildAllFrame() {
   }   
   *dimcheck(); 
 }
+
 
 module dimcheck() { // check dimensions
   rotz (120)
@@ -878,7 +802,7 @@ module foot() {
   offsety = motor_offset+0.5;
   rod_hold = rod_dia+6.5;
   rodrd = rod_space/2+4;
-  rodht = botrodht;
+  rodht = 4.25;
   dec = 12;
   rodextend = 4.5;
   htr = 18;
@@ -973,7 +897,7 @@ module foot2() {
   scr = (htr)/2+rod_base; // screw height
   offsety = motor_offset+0.5;
   rodrd = rod_space/2+4;
-  rodht = botrodht;
+  rodht = 4.25;
   dec = 9;
   rodextend = 4.5;
   fix_space = rod_space+24;
@@ -1090,7 +1014,8 @@ module motor_support() {
         cubey (3,14-offsety,38,  15,offsety,38/2+sfloor); // sides
         cubey (3,7-offsety,40,   15,offsety+9,40/2+sfloor); // sides
         hull() { // rods ends
-          cylz (15,-15,               rod_space/2,0,-4.25);      cubey (2,14-offsety,-15,    16,offsety,-7.5+sfloor);
+          cylz (15,-15,  rod_space/2,0   ,-4.25);         
+          cubey (2,14-offsety,-15,     16,offsety,-7.5+sfloor);
           tsl (rodrd,7,rodht)
             rotz(30) {
               cyly (8.5,-16.5,      0,2);
@@ -1176,20 +1101,20 @@ module carriage() {
       if (pscrew) 
         hull() 
           duplx (-lbearing_dia/2-7.5)
-            cylz (-1.2,66, rod_space/2); 
+            cylz (-1.2,99, rod_space/2); 
       else {
         hull() {
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2+2,0,0);   
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2+2,0,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
         }  
         hull() {
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5-pcut,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5-pcut,-belt_dist-5.5,0);   
         }  
       }  
-      cyly (-3,66, pscrew,0,carht/2); //pinch hole  
+      cyly (-3,99, pscrew,0,carht/2); //pinch hole  
     }  
-    cylz (-2,66, 9,belt_axis,carht/2); //hole to lock belt if needed    
+    cylz (-2,99, 9,belt_axis,carht/2); //hole to lock belt if needed    
   }
   difference() { 
     union() {
@@ -1221,11 +1146,11 @@ module carriage() {
       
     } //::: then whats removed :::
     cutx();
-    cylz (-2,66, 0,-18.5); // central pad hole
+    cylz (-2,99, 0,-18.5); // central pad hole
     cconez (3.2,2.6, 5,20,  -sw_offset, 9.5,-1); // switch actuation
     cconez (2.5,3.2, -2,20, 6,-12.5+belt_axis,21.9); // stop fixation
     dmirrorx()  {
-      cylz (lbearing_dia,22, rod_space/2,0,-0.1);
+      cylz (lbearing_dia,66, rod_space/2,0,-0.1);
       cone3y (8,12.5, 0,1.5,3,  pscrew,9,carht/2);
     }  
     cone3z (9.5,10.5,  carht+0.2,0.8,1, -belt_side,belt_axis,-1);
@@ -1233,7 +1158,7 @@ module carriage() {
     tsl (0,belt_axis) { // belt anchoring hole
       hull() 
         dmirrory ()
-          cylz (-2,33, belt_side,3.4,-0.1);
+          cylz (-2,99, belt_side,3.4,-0.1);
       hull() 
         dmirrory () {
           cylz (2,1, belt_side,3.4,carht/2+1);
