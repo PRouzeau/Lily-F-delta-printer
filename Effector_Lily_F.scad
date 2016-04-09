@@ -65,7 +65,7 @@ if (qpart) {
   }  
 }
 
-include <PRZutility.scad>
+include <Z_library.scad>
 include <X_utils.scad>
 
 function eff_hoffset() = 28;

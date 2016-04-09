@@ -1,4 +1,4 @@
-include <PRZutility.scad>  include <X_utils.scad>
+include <Z_library.scad>  include <X_utils.scad>
 // Data Set for Delta printer -LilY - Jan-april 2015
 // To be build from scratch (Lily 'S'), or with  standard Fisher components (Lily 'F')
 // Copyright Pierre ROUZEAU AKA 'PRZ'
@@ -446,8 +446,10 @@ module panel (num){
   }
   module structdrill(top=false) {
     rot120(30) { // structural panels screws
-      dmirrory() cylz(-4,55, -splatedist-panelthk/2,splatewd/2-18);
-      cylz(-4,55, -splatedist-panelthk/2, (i>100)?30:-30);
+      dmirrory() {
+        cylz(-4,55, -splatedist-panelthk/2,splatewd/2-18);
+        cylz(-4,55, -splatedist-panelthk/2, 30);
+      }  
     }
     rot120(-30) {
       cylz ((top)?-20:-8,55, belt_axis+beam_int_radius);  //     tensioner /belt access   
@@ -523,9 +525,11 @@ module panel (num){
         if (httop) 
           cubez(boxpanelthk, sd_doorwd, httop, 0,0,htotal+top_panelthk);
       }  //::::::::::::::::::::::::::
-      cubez(50,sd_doorwd+20,5,  0,0,260); // cut door in half
-      if (num==5)
-        tsl (0,-15,htotal-190) {
+      if ($subbase)
+        cubez(50,sd_doorwd+20,5,  0,0,260); // cut door in half
+      htfan = ($subbase)? htotal-190:50;
+      if (num==5) // left door - board cooling fan
+        tsl (0,15,htfan) {
           cylx (-80,55); 
           dmirrory() dmirrorz() 
             cylx (-4, 55, 0, 71.5/2, 71.5/2);
@@ -747,7 +751,7 @@ $bEffector=true;
 module buildEffector() {
   color (moving_color) {
     import(Effector_STL);
-    rotz(60) tsl (0,0,1)
+    tsl (0,0,1)
       rot(180) import(Hotsup_STL);
   }  
    * tsl (0,0,25) {
@@ -1159,9 +1163,7 @@ module motor_support() {
   }  
 }
 
-module carriage() {
-  //rod_space=42;
-  //lbearing_dia=15;
+module carriage () {
   belt_side = 5.5;
   carht = hcar;
   offsety = -10;
@@ -1176,20 +1178,20 @@ module carriage() {
       if (pscrew) 
         hull() 
           duplx (-lbearing_dia/2-7.5)
-            cylz (-1.2,66, rod_space/2); 
+            cylz (-1.2,99, rod_space/2); 
       else {
         hull() {
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2+2,0,0);   
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2+2,0,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
         }  
         hull() {
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
-          cylz (-1.2, 66, rod_space/2-lbearing_dia/2-5-pcut,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5,-belt_dist-5.5,0);   
+          cylz (-1.2, 99, rod_space/2-lbearing_dia/2-5-pcut,-belt_dist-5.5,0);   
         }  
       }  
-      cyly (-3,66, pscrew,0,carht/2); //pinch hole  
+      cyly (-3,99, pscrew,0,carht/2); //pinch hole  
     }  
-    cylz (-2,66, 9,belt_axis,carht/2); //hole to lock belt if needed    
+    cylz (-2,99, 9,belt_axis,carht/2); //hole to lock belt if needed    
   }
   difference() { 
     union() {
@@ -1221,21 +1223,21 @@ module carriage() {
       
     } //::: then whats removed :::
     cutx();
-    cylz (-2,66, 0,-18.5); // central pad hole
-    cconez (3.2,2.6, 5,20,  -sw_offset, 9.5,-1); // switch actuation
+    cylz (-2,99, 0,-18.5); // central pad hole
+    cconez (3.2,2.6, 5,20,  -sw_offset,9.5,-1);//switch actuation
     cconez (2.5,3.2, -2,20, 6,-12.5+belt_axis,21.9); // stop fixation
     dmirrorx()  {
-      cylz (lbearing_dia,22, rod_space/2,0,-0.1);
+      cylz (lbearing_dia,66, rod_space/2,0,-0.1);
       cone3y (8,12.5, 0,1.5,3,  pscrew,9,carht/2);
     }  
-    cone3z (9.5,10.5,  carht+0.2,0.8,1, -belt_side,belt_axis,-1);
-    cone3z (10.5,9.5,  1,0.8,30, -belt_side,belt_axis,-1);
+    cone3z (9.5,10.5, carht+0.2,0.8,1, -belt_side,belt_axis,-1);
+    cone3z (10.5,9.5, 1,0.8,30, -belt_side,belt_axis,-1);
     tsl (0,belt_axis) { // belt anchoring hole
       hull() 
-        dmirrory ()
-          cylz (-2,33, belt_side,3.4,-0.1);
+        dmirrory()
+          cylz (-2,99, belt_side,3.4,-0.1);
       hull() 
-        dmirrory () {
+        dmirrory() {
           cylz (2,1, belt_side,3.4,carht/2+1);
           cylz (4,0.1, belt_side,3.4,carht);
         }
@@ -1245,11 +1247,11 @@ module carriage() {
           cylz (2,0.1, belt_side,3.4,0.5);
         }  
       }
-      duplz (carht+10) // cut top/bottom (cone)
+      duplz(carht+10) // cut top/bottom (cone)
         cubez (100,100,-10);
   }  
- * cylz (15,-8, 6,-11); //rubber stop
-  dmirrorx () 
+ * cylz(15,-8, 6,-11); //rubber stop
+  dmirrorx() 
     difference() {
        hull () {
           cylz (lbearing_dia+7.5,19.5-lbearing_dia/2, rod_space/2,0);
@@ -1511,10 +1513,7 @@ module Lily_plate() {
   difference() {
     plate ([""],"",60,38, 2, 3, 1.5);  
     tsl (-17,-6, -0.1) Lily_signature (16);
-  *  tsl (-1,-15)
-      textz("F 131 / 500",5,3,true,0,0,-0.1, "center", "center");
   } 
- * duplx (3.9) cubez (0.8,6,0.8, 10.55,-15); 
 }
 
 
@@ -1533,7 +1532,6 @@ module hiding_plate() {
     cylz (8,1.9);
     cone3z (6.4,3.2, 0.5,1.7,2.2, 0,0,-0.1);
   }
-  
   difference() {
     hull () 
       dmirrorx () 
