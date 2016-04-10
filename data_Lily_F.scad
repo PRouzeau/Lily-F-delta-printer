@@ -6,7 +6,7 @@ include <Z_library.scad>  include <X_utils.scad>
 // documentation licence cc BY-SA and GFDL 1.2
 // Design licence CERN OHL V1.2
 
-part=0;
+part=67;
 xpart=0;
 
 thkglass=4; // glass thickness for glass retainers
@@ -155,7 +155,6 @@ basedpoffset = 4; // base/top panel front offset
 
 // side plate dimensions 
 splatewd = 150; // before alternative datasets
-$subbase=false;
 windoorwd = 150;
 windoorht = 400;  
   
@@ -190,7 +189,9 @@ rod_base  = 46;
 $ht_tens = 72;
 hotend_vert_dist = 31;
 $bedDia=200; 
-//*/
+// stool below printer - that modify panels
+htsub=220; $spool_tsl = [92,40,-125]; 
+//*
 
 /* Alternative dataset with same components HXMS 139/530 - Scratch build
 //  -> usable diameter 186 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
@@ -236,8 +237,8 @@ hotend_vert_dist = 40;
 $bedDia = 260; 
 car_hor_offset= 18;
 splatewd = 180;
-$subbase =true; // structure below floor for spool & power supply
-htsub = 120; // height of the sub-base -could be whatever you want, depending spool you use + tensioner clearance
+// structure below floor for spool & power supply
+htsub = 220; // height of the sub-base -could be whatever you want, depending spool you use + tensioner clearance
 spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
 $spool_tsl = [115,-85,-120];
 //*/
@@ -275,8 +276,8 @@ eff_hor_offset= 30;
 splatewd = 230;
 basedpoffset = 2; // base/top panel front offset
 motor_voffset = panelthk+23;
-$subbase =true; // structure below floor for spool & power supply
-htsub = 120; // height of the sub-base -
+// structure below floor for spool & power supply
+htsub = 220; // height of the sub-base -
 spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
 $spool_tsl = [115,-100,-120];
 
@@ -525,9 +526,9 @@ module panel (num){
         if (httop) 
           cubez(boxpanelthk, sd_doorwd, httop, 0,0,htotal+top_panelthk);
       }  //::::::::::::::::::::::::::
-      if ($subbase)
+      if (htsub)
         cubez(50,sd_doorwd+20,5,  0,0,260); // cut door in half
-      htfan = ($subbase)? htotal-190:50;
+      htfan = (htsub)? htotal-190:50;
       if (num==5) // left door - board cooling fan
         tsl (0,15,htfan) {
           cylx (-80,55); 
@@ -552,7 +553,7 @@ module panel (num){
       cubez (basewd,basedp,-basethk, 0,basedpoffset); 
       //::::::::::::::::::::::::::
       if ($details) 
-        if ($subbase)
+        if (htsub)
           botplatedrill();
         else
           structdrill(); 
@@ -564,7 +565,7 @@ module panel (num){
       if ($details) botplatedrill();
       if ($details) structdrill();
     }  
-  else if (num==13) //mid panel
+  else if (num==13) //separators
     dmirrorx() 
       diff() {
         cubey (basewd/2,-midpaneldp,boxpanelthk, -basewd/4,splatedist,basethk/2);
@@ -654,11 +655,11 @@ module buildAllFrame() {
             profile_angle (angleSize, angleSize, angleThk, htotal+top_panelthk+32.5-5.5); 
     }       
   } 
-  if ($isAngle) {
+  if (htsub) { // side extruder if spool in base
     dmirrorx() rotz(30) mirrory() 
       set_extruder (platedist+boxpanelthk,-50,200);
   }
-  else {
+  else { // face extruder - not very realistic
     tsl (22,38,htotal-120)
       rot (0,-55) {
         white() tore (4,240,  200,300);
@@ -679,7 +680,7 @@ module buildAllFrame() {
 
 module dimcheck() { // check dimensions
   rotz (120)
-  color("red") {   
+  red() {   
     cyly (-3,66, 0,beam_int_radius,15); // centering hole
     cyly (-3,66, 0,beam_int_radius,htotal-23+15); // centering hole
     echo ("motor center pin height:", htotal-23+15); // presently 447
