@@ -52,6 +52,7 @@ if (part) { // set part =0 (no part) for delta simulation
 }
 
 Delta_name = str("Lily F 131/500 by PRZ");
+txtzpos = 320; // position of the message panel top
 holeplay = 0.16; // added diameter to ALL cylinder (internal/external)
 ballplay = 0.14; // added play to ball diameter - shall give tight socket
 dia_ball = 5.96; // real ball diameter
@@ -68,9 +69,9 @@ Effector_STL= "STL/Lily_30_effector_F.stl";
 Hotsup_STL = "STL/Lily_31_hotend_support_F.stl";
 
 beam_int_radius = 131; // radius on rod axis plane - used as reference radius
-reference_l = beam_int_radius*1.73205-50.9; //measure distance with a reference rod 
+function reference_l() = beam_int_radius*1.73205-50.9; //measure distance with a reference rod 
 //radius 131 correspond to reference measure of 176mm
-echo (reference_l =reference_l);
+echo ("reference_l",reference_l());
 
 htotal = 426+45-13+42; // total height between plates 
 //echo (htotal=htotal);
@@ -190,7 +191,7 @@ $ht_tens = 72;
 hotend_vert_dist = 31;
 $bedDia=200; 
 // stool below printer - that modify panels
-htsub=220; $spool_tsl = [92,40,-125]; 
+// htsub=220; $spool_tsl = [92,40,-125]; 
 //*
 
 /* Alternative dataset with same components HXMS 139/530 - Scratch build
@@ -306,8 +307,8 @@ module cyltest(dia) {
   backpanelht = htotal + httop+ ceil(((htsub)?htsub+basethk+((httop)?top_panelthk:0):0)/5)*5; // back panel height
   midpaneldp =  ceil((splatedist + platedist+panelthk/2+boxpanelthk)/10)*10; // if there is a sub-box, depth of mid panel bolted on back panel
 
-  toprodlg =round(reference_l+39+10); 
-  botrodlg =($wallsup)?round(reference_l+31+10):round(reference_l+29+10); 
+  toprodlg =round(reference_l()+39+10); 
+  botrodlg =($wallsup)?round(reference_l()+31+10):round(reference_l()+29+10); 
   $dtxt = [ // $dtxt shall be an array
     str("Struct. plates: ",round(splatewd),"/",round(basewd-30),"x",htotal, "x",panelthk," mm"),
     str("Box plates: 2x ",round(platewd),"x",htotal, "x",boxpanelthk," mm"),
@@ -315,11 +316,11 @@ module cyltest(dia) {
     str("Base plate: ",round(basedp)," x ",round(basewd),"x",basethk," mm"),
     str("Rod length: ",round(htotal-rod_base-28), " mm"),
     str("Threaded rods: ",botrodlg, "/",toprodlg," mm"),
-    str("Reference base: ",round(reference_l), " mm"),
+    str("Reference base: ",round(reference_l()), " mm"),
     "Machine licence: CERN OHL V1.2"
   ];
   
-  txtzpos = 320; // position of the message panel top
+
 
 //*
 $bCar=true; // allow the program to use below module instead of standard carriage
@@ -366,7 +367,7 @@ module buildSides() {
             posrod_offset,-posrodaxo+20,botrodht-htotal); 
         }
         red()//measurement stick:176 for beam_int_radius 131
-          cyly (3,-reference_l,  5,-posrodaxo, toprodht-htotal);
+          cyly (3,-reference_l(),  5,-posrodaxo, toprodht-htotal);
       }  
   } 
   PS_shift = platewd/2-dpshift-40*0.5-58/2 -3; // 40 thk PS, 58 width PS
@@ -1382,8 +1383,8 @@ module switchbase () { // design to be finalized
 
 module ref_stick() { // reference for triangle assembly
   difference() {
-    cubez (reference_l, 8,6);
-    cubez (reference_l-6, 5,6, 0,0,1.5);
+    cubez (reference_l(), 8,6);
+    cubez (reference_l()-6, 5,6, 0,0,1.5);
   }
 }
 
