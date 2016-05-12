@@ -1,6 +1,6 @@
 ; Configuration file for Lily 'F' 131/500 by PRZ - delta 3D printer
 ; (c) Pierre ROUZEAU  April 2016 - cc BY-SA, GFDL 1.2
-Shall use recent version of DC42 Fork
+Shall use recent version of DC42 Fork - 1.12 or later and DWC 1.11 or later
 Note that these DC42 recent versions need at least version 1.08 of the web interface
 
 ; Communication and general
@@ -23,7 +23,7 @@ M106 S0 ; Turn off Fan 0 (backward compatible with older firmware)
 
 ; Axis and motor configuration
 M569 P0 S0							; Drive 0 (X) goes forward - adjust depending your configuration
-M569 P1 S1							; Drive 1 (Y) goes backward - adjust depending your configuration
+M569 P1 S0							; Drive 1 (Y) goes forward - adjust depending your configuration
 M569 P2 S0							; Drive 2 (Z) goes forward - adjust depending your configuration
 M569 P3 S0							; Drive 3: extruder - adjust depending your configuration
 ; beware old firmware version, extruder was P4
@@ -49,12 +49,12 @@ M566 X1200 Y1200 Z1200 E600			; Maximum instant speed changes mm/minute  !!extru
 M305 P1 R4700                   	; Put your own H and/or L values here to set the first nozzle thermistor ADC correction
 									; to compare values, your ADC shall be calibrated ! see commissioning
 
+M143 S300							; maximum hot-end temperature  - default 260°C
+									
 ; Tool definitions
 M563 P0 D0 H1                       ; Define tool 0
 G10 P0 S60 R60                     	; Set tool 0 operating and standby temperatures
-; M301 H1 P10 I0.1 D100 W180 ; temperature control PID default configuration
-M301 H1 P12 I0.4 D80 W180 B30 T0.4  ; new configuration - not super stable - overshoot 
-;M301 H1 P10 I0.1 D100 T0.4 S1.0 W180.0 B30.0
+M301 H1 P12 I0.25 D70 T0.21 S0.7 W150 B20;temperature control PID for hotend insulated with Kapton
 ;M572 D0 S0.05 		; elasticity compensation for the Bowden tube, 1rst extruder - abandoned due to high vibration on extruder
 M92 E420.0;  !! extrusion rate, with supplied geared extruder - copied from Ormerod, nearly exact
 // for direct drive extruder, the value may be from 140 to 150
@@ -74,6 +74,7 @@ M404 N1.75 D0.4						; Filament diameter 1.75, nozzle 0.4 - used by web interfac
 M98 P/macros/startmusic.g			; Macro play music with steppers, indicates board started, stepper and drivers ok
 
 ;Useful G-codes
+;M206 Set home offset. Could be used to adjust head above bed during printing. M206 Z0.1 move up by 0.1mm 
 ;M999 reset board
 ;M562 reset a temperature fault
 ;M105 get current extruder temperature
