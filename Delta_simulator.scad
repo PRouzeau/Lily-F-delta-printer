@@ -13,18 +13,48 @@
 // June - allow more personnalisation - review fan , spool - allow dataset text lines
 // 12 June 15: 'square Delta' - 29 sept 15 'Zatsit' folded mechanic
 
-// set below variable to false if you want to do a closeup view during animation
-camPos = true; //if true force camera position according request in dataset
-
 //??? modifs -> Inversion rotation/translation on spool
+//-- Data not redefined in dataset -------
+$bArm= false;
+$xtxt = 0; //???
+$bdist = 0; // ? undef ?
+$isAngle = false; // This is for Lily Big with steel angle rails
+$extrusionwd = 0;
 
-//dimensions are in mm.
+/*[Display]*/
+//Build all the frame
+$bAllFrame=true;
+//Show details
+$details=false;
+//Remove box top
+$noTop = false;
+//Remove top column supports
+$noTopSup = false;
+//Complete Box (else only structural panels)
+$boxed = true;
+//Show side panels *in addition* to frame
+$bSide = true; 
+//??
+$noCover=false;
+
+
+
+/*[Movement]*/ 
+//If no animation, the position is imposed by coordinates
+panimation=false;
+//hotend x coordinate - stay inside 
+xe=50; 
+//hotend y coordinate
+ye=50;
+//hotend z coordinate 
+ze=0; 
+
+/*/dimensions are in mm.
 Delta_name = "Simulator example";
-//-- Frame data ----------------------------------------------
+//-- Frame data -------------------------
 beam_int_radius = 175; // radius inside the rectangular columns - used as reference radius
  // if columns are replaced with rods this is the radius of the rod axis plane. 
 hbase = 60; // height of the base structure
-htop  = 30;  // height of top structure
 htotal = 680; // total height, including base and top structure
 bed_level = 8; // distance between the top of the bottom structure and the top of the bed.
 extrusion = 20;
@@ -34,18 +64,18 @@ railthk   = 0;  // rail thickness. if > 0, show a cuboid simulating a sliding ra
 railwidth = 0; 
 rail_base = 0; // base of the rail, which could be higher than bed plate
 
-//-- Carriage data --------------------------------------------------
+//-- Carriage data --------------------
 car_hor_offset=20; //Carriage: horizontal distance between the articulation and the internal of the columns
 car_vert_dist=27;  //Carriage: vertical articulation distance/reference plane (at the top of the carriage) 
 hcar=75; // carriage height - no effect on travel
 dia_ball = 10; 
 dia_arm  = 68;
 
-//-- Effector data --------------------------------------
+//-- Effector data ----------------------
 eff_hor_offset=28; //Distance effector center/articulations Kossel mini: 20, Rostock max: 33mm
 eff_vert_dist = 12; //Vertical distance between the bottom of effector and the articulations axis
 
-//-- General design data -------------------------------
+//-- General design data ----------------
 arm_space=50; // space between the arms
 wire_space = 0 ; // space between tensioning wire
 top_clearance=10; // clearance between top of the carriage and top structure
@@ -68,49 +98,58 @@ corner_offset = -3; //offset center of the corner sector / beam internal radius
 housing_base = 0; // if = 0 no housing shown - usually set to hbase
 housing_opening = 300;
 belt_dist=0; //distance between the belt and the internal of the column. (belt face at the contact point with effector). if this data is different from 0, rough belt approximation will be shown, for conflict evaluation.
+
+
 spool_diam = 200; // if spool_diameter > 0, spool shown on top - vertical axis
 spool_thk  = 70;
 
-// geometry
-rotAng2 = 120; // added angles definition for 'square' delta - see specific dataset
-rotAng3 = 240;
-frame_rot = 30;
-move_rot  = 0;
-railrot = -30;
-
-//-- Miscellaneous stuff - no influence on movement ---------------------------------
+//-- Miscellaneous stuff - no influence on movement ---
 struct_color = "red";
 moving_color = "deepskyblue";
 bed_color = [0.5,0.5,0.5,0.5]; // transparent 
 
-$vpd=camPos?2100:undef;      // camera distance: work only if set outside a module
-$vpr=camPos?[80,0,42]:undef; // camera rotation
-$vpt=camPos?[215,-90,420]:undef; //camera translation  */
+//Geometry
+move_rot  = 0;
+frame_rot = 30;
 
-//--- Text display ------------------------------------------
-txtsize = beam_int_radius/16;
-txtxpos = 0.8*beam_int_radius;
-txtypos = 1.22*beam_int_radius;
-txtzpos = 320;
+//--- Text display -----------------------
 txtangle= -60;
+txtzpos = 320;
+
+//*/
+
+/*[Hidden]*/
+// geometry
+rotAng2 = 120; // added angles definition for 'square' delta - see specific dataset
+rotAng3 = 240;
+railrot = -30;
+
+//Indicate that the program just started (to impose camera position)
+camPos = $vpr==[55,0,25];
+
+/*
+$vpd=camPos?2100:$vpd;      // camera distance: work only if set outside a module
+$vpr=camPos?[80,0,42]:$vpr; // camera rotation
+$vpt=camPos?[215,-90,420]:$vpt; //camera translation  */
 
 //== data set included below will supersedes above data 
 include <data_Lily_F.scad>  //- Data set for Hexagon minimum by PRZ
-//=====================================================================================
+//=======================================
 //$details=true;
-
 //qpart = 1;
 
+//--- Text display -----------------------
+txtsize = beam_int_radius/16;
+txtxpos = 0.8*beam_int_radius;
+txtypos = 1.22*beam_int_radius;
+
+//------------------------------------------
 $fn=32; // smooth the cylinders
 
 //$t=0.8377;
 
 //-- imposing effector position (if defined, this will supersedes the animation equation)
 // note that structure is rotated 30°, so x and y are rotated accordingly.
-/* 
-xe=100; // impose hotend x coordinate
-ye=50;  // impose hotend y coordinate
-ze=0; // impose hotend z coordinate */
 
 //Alternatively, you could impose the position in polar coordinates
 /*
@@ -125,16 +164,14 @@ ye=e_radius*sin(e_angle);   //*/
 // Displayed angles are those of the arms attached to the back column
 // Note that for long arms, the side angles you can see may not be acceptable for rod ends type 'traxxas', 'Igus' or equivalent and are a very limiting factor for the reachable area.
 
-//Last parameters defines camera position at preview- set camPos to 'false' if you want to make an animation with another position else view will be reset at each frame.
-
 //echo_camera();
 
-//====================================================================
-*view(); //The animation will run around a cylinder based on the maximum reachable radius at the middle of the columns. If arms are sufficiently long, it will bang on columns, belts, etc.
-view_circle (working_dia,0); // view_circle (dia, height) - if off-limits - display may fail
+//=======================================
+view(); //The animation will run around a cylinder based on the maximum reachable radius at the middle of the columns. If arms are sufficiently long, it will bang on columns, belts, etc.
+*view_circle (working_dia,0); // view_circle (dia, height) - if off-limits - display may fail
 // view_helix (); 
 
-//--- dimensions calculations --------------------------------------------------
+//--- dimensions calculations -----------
 radius_cent = beam_int_radius-eff_hor_offset-car_hor_offset;
 ar_length = (arm_length)?arm_length: radius_cent/cos(delta_angle); // center to center
 d_angle = acos(radius_cent/ar_length);
@@ -160,14 +197,14 @@ htv = tan (d_angle)*eff_hor_offset; echo (htv=htv); //virtual articulation pos
 virtual_axis_d = htv-eff_vert_dist-hotend_vert_dist; //diff hotend/virtual arti
 TESc = pow(arm_space,2)/ball_end_space/abs(virtual_axis_d); // arbitrary coef
 
-//====================================================================
+//=======================================
 
 module view () {//if no fixed xe,ye,ze, viewing trajectory and other stuff as a function of $t
   // Herebelow the animation sequence (it loops) - 360 steps gives a step every 2° of rotation.
   // 5 sequences: 1:flat peripheral 2:flat curve to center 3:climb up 4: curve from center sligthly down to periphery. 5: Helix down. Note that in sequence 4 carriage bang in the top structure as trajectory is on a cone, but available height is flat on the sides.
    
-  if ((xe!=undef)&&(ye!=undef)&&(ze!=undef)) { 
-     simul (xe,ye,ze); // arms and effector at the given xe,ye,ze values ze default to 0
+  if (!panimation) { 
+     simul(xe,ye,ze); // arms and effector at the given xe,ye,ze values
   }  
   else { // arms and effector at the animated position (which depends from $t)
     hwm= working_height_min;
@@ -229,7 +266,7 @@ module delta_cal (x, y, z, rot) { // calculation of arms angles and display
     txta = str("Angles: vertical: ",90-round(h_angle*10)/10, " horizontal: ", round(z_angle*10)/10);
     ltxtsup = $dtxt? len($dtxt):0;
     rot (0,-10,txtangle-move_rot) tsl (0,$xtxt)
-      tsl (txtxpos, txtypos,txtzpos-txtsize*37.5-ltxtsup*1.5)
+      t(txtxpos,txtypos,txtzpos-txtsize*39-ltxtsup*1.5)
         rot (90,0,90) color("black")
           textz(txta, txtsize*0.85, 2, false);
   }
@@ -237,7 +274,7 @@ module delta_cal (x, y, z, rot) { // calculation of arms angles and display
 
 module disp_effector(x, y, z){
   wx= arm_space-dia_ball*1.8;
-  rotz (30)
+  rotz(30)
     tsl(x,y,effVtPos+z) {  
       if ($bEffector) buildEffector();   
       else color(moving_color) { // simplified effector shape 
@@ -269,7 +306,7 @@ module disp_armcar(x,y,z,i, ang_hor, ang_ver, vpos_car, car_col, arm_col) {// ar
   zpos= z+eff_vert_dist+effVtPos;
   tsl (x,y) rotz (i) { // arms grow from effector
      // Arm creation and duplication
-      tsl (-arm_space/2,eff_hor_offset,zpos){
+      tsl(-arm_space/2,eff_hor_offset,zpos){
         if ($bArm) 
           buildArm (ang_hor,ang_ver);
         else {
@@ -423,6 +460,7 @@ module disp_text(angz,xpos,ypos,zpos) { // display printer data on a panel
     str("and mini angle: ",round(mini_angle*10)/10,"°"),
     str("-Working diam: ",round(working_dia)," mm"),
     str("For bed/ceiling: ",round(travel_stop-hbase-bed_level)," mm"),
+    str("-Bed surface at: ",round(bed_level)," mm from plate"),
     str("-Centre working height: ",round(working_height_cent)," mm"),
     str("-Minimum working height: ",round(working_height_min)," mm"),
     str("Effector stability:", round(TESc*100)/100, "  distV:",round(virtual_axis_d*10)/10,"mm"),
@@ -431,15 +469,15 @@ module disp_text(angz,xpos,ypos,zpos) { // display printer data on a panel
   vtext1 = $dtxt? concat (vtext0,$dtxt):vtext0; //add dataset text, if any - shall be an array
   vtext = concat (vtext1,"", "program License: GPL V2.0 - Author: PRZ");
   ltxt = len(vtext);
-    rot (0,-10,angz) tsl (0,$xtxt) {
-      color ("white") // panel for writing
-        tsl (xpos, ypos-txtsize, zpos-(ltxt+0.8)*1.5*txtsize) 
-          cube ([1,23.5*txtsize,(ltxt+2)*1.5*txtsize]); 
-      color ("black") { // the writing on the wall
-        for (i=[0:ltxt-1]) {
+    r(0,-10,angz) t(0,$xtxt) {
+      color("white") // panel for writing
+        t(xpos, ypos-txtsize, zpos-(ltxt+0.8)*1.5*txtsize) 
+          cube([1,23.5*txtsize,(ltxt+2)*1.5*txtsize]); 
+      color("black") { // the writing on the wall
+        for(i=[0:ltxt-1]) {
           txs=(i==ltxt-1)?txtsize*0.8:txtsize; // last line is smaller size (license)
-          tsl (xpos, ypos, zpos-1.5*txtsize*i)
-            rot (90,0,90)
+          t(xpos, ypos, zpos-1.5*txtsize*i)
+            r(90,0,90)
               textz(vtext[i], txs, 2, (i==0));  //(i==0) bold the first line
         }
       } 
@@ -447,98 +485,22 @@ module disp_text(angz,xpos,ypos,zpos) { // display printer data on a panel
 } 
 
 //======== LIBRARY (extract from the Z_utility library) =======================
-//-- Operators -------------------------------------
-//rotation and translations without brackets - 
-module rot (x,y=0,z=0) {rotate([x,y,z]) children();}
-module rotz (z) {rotate([0,0,z]) children();}
-module tsl (x,y=0,z=0) {translate([x,y,z]) children();}
-module tslz (mz) { translate ([0,0,mz]) children();}
-
+//-- Operators -----------------------------
 // for a delta, everything is rotated three times at 120°, so an operator for that 
 module rot120 (a=0) {
   for(i=[0,rotAng2,rotAng3])  // rotation angles could be redefined for 'square' delta
     rotate([0,0,i+a]) children();
 }
 
-module duplx (dx,nb=1, startx=0) { // duplicate an object at distance dx
-  for (i=[0:nb])
-    tsl (dx*i+startx) children();  
-}
-
-module duplz (dz,nb=1, startz=0) { // duplicate vertically an object at distance dz
-  for (i=[0:nb])
-    tsl (0,0,dz*i+startz) children();
-}
-
-module dmirrorx() { // duplicate and mirror on x axis
-  children();
-  mirror ([1,0,0]) children();
-}
-
-module dmirrory() { // duplicate and mirror on y axis
-  children();
-  mirror ([0,1,0]) children();
-}
-
-module dmirrorz() { // duplicate and mirror on z axis
-  children();
-  mirror ([0,0,1]) children();
-}
-
-//-- Primitives ------------------------------------
-
-module textz(txt,size,h,bold) { // position text normal to z axis
-  st=(bold)? "Liberation Sans:style=Bold":"Liberation Sans";
-  linear_extrude(height = h) 
-    text (str(txt), size, font=st);
-}
-
-module cylz (diam,height,x=0,y=0,z=0,div=$fn) { // Cylinder  on Z axis
-  mv=(height<0)?height:0; 	// accept negative height	
-  center=(diam<0)?true:false;	
-  translate([x,y,mv+z]) 
-    cylinder (d=(abs(diam)), h=abs(height), $fn=div, center=center);
-}
-
-module cylx (diam,length,x=0,y=0,z=0,div=$fn) {//Cylinder on X axis
-  mv=(length<0)?length:0;	// not ok if diam AND length are negative. who cares ? 
-  center=(diam<0)?true:false;	
-  translate([x+mv,y,z])
-    rotate([0,90,0])
-      cylinder (d=(abs(diam)), h=abs(length), $fn=div, center=center);
-}
-
-module cyly (diam,length,x=0,y=0,z=0,div=$fn) {//Cylinder on X axis
-  mv=(length<0)?length:0;	// not ok if diam AND length are negative. who cares ? 
-  center=(diam<0)?true:false;	
-  translate([x,y+mv,z])
-    rotate([-90,0,0])
-      cylinder (d=(abs(diam)), h=abs(length), $fn=div, center=center);
-}
-
-module cubez(xd,yd,zd,x=0,y=0,z=0) { // centered on x and y, not centered on z
-  mz=(zd<0)?zd:0;
-  tsl (x-xd/2,y-yd/2,mz+z)
-    cube ([abs(xd),abs(yd),abs(zd)]);
-}
-
-module eqtrianglez (dim, length) { // dim positive defines triangle base, negative defines the external circle diameter. Centered.
-  mz = (length<0)?-length:0; 
-  base = (dim<0)? -dim/cos(30)*3/4: dim;
-  tsl (0,0-base*cos(30)/3,mz)
-    linear_extrude(height=abs(length))
-      polygon(points=[[-base/2,0],[base/2,0],[0,base*cos(30)]]);		
-}
-
 module sector (diam, height, half_angle) { // cut a sector - non generic module
-  difference () { 
-    cylinder (d=diam,h=height,$fn=120);
-    rotz (-half_angle)
-      tsl (-diam,0,-1)
+  difference() { 
+    cylinder(d=diam,h=height,$fn=120);
+    rotz(-half_angle)
+      t(-diam,0,-1)
         cube ([diam*2,diam*2,height+2]);
-    rotz (half_angle)
-      tsl (-diam,-diam*2,-1)
-        cube ([diam*2,diam*2,height+2]);
+    rotz(half_angle)
+      t(-diam,-diam*2,-1)
+        cube([diam*2,diam*2,height+2]);
   }  
 } 
 
@@ -561,16 +523,16 @@ ang_face = asin (cosint/fr);
 
 module hexagon (corner_radius, axis_space, axisf_radius, coffset,choffset, h, hpos=0) { 
   hull() {
-    rot120 (railrot)
-      dmirrory ()
-        cylz (corner_radius*2,h, axisf_radius+coffset,axis_space/2+coffset/2+choffset,hpos,48);
+    rot120(railrot)
+      dmirrory()
+        cylz(corner_radius*2,h, axisf_radius+coffset,axis_space/2+coffset/2+choffset,hpos,48);
   }
 }
 
-//-- Miscellaneous -------------------------------------------------------
+//-- Miscellaneous -----------------------
 module build_fan(size=40, thk=6) { //~ok for 25,30,40,60,80,120. Not ok for 92
   holesp = size==120?52.5:size==80?35.75:size==60?25:0.4*size;
-  color ("black") {
+  color("black") {
     difference() {
       hull() 
         dmirrorx() dmirrory() cylz (2,thk,size/2-1,size/2-1);

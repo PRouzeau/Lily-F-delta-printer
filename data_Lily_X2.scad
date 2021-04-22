@@ -1,6 +1,4 @@
-include <Z_library.scad>  
-include <X_utils.scad> 
-xpart=0;
+include <Z_library.scad>  include <X_utils.scad>
 // Data Set for Delta printer -LilY - Jan-april 2015
 // To be build from scratch (Lily 'S'), or with  standard Fisher components (Lily 'F')
 // Copyright Pierre ROUZEAU AKA 'PRZ'
@@ -8,7 +6,8 @@ xpart=0;
 // documentation licence cc BY-SA and GFDL 1.2
 // Design licence CERN OHL V1.2
 
-part=63;
+part=67;
+xpart=0;
 
 thkglass=4; // glass thickness for glass retainers
 //$noTop = true;
@@ -229,6 +228,99 @@ txtzpos = 780;
 mirrorx() //2nd spool at bottom 
   translate ($spool_tsl) rotate ($spool_rot) 
       spool("red");
+
+
+//*
+
+/* Alternative dataset with same components HXMS 139/530 - Scratch build
+//  -> usable diameter 186 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
+// uncommenting the block will supersede former data  
+Delta_name = str("LilY S 139/530 by PRZ");
+beam_int_radius = 139;
+arm_length = 204;
+mini_angle = 23; 
+basewd = 390;
+basedp = 330;
+basedpoffset = 1;
+htotal=530;
+$wallsup = 70;
+posrod_offset = 5;
+rod_base= -0.01;
+rod_space = 58;
+$ht_tens = 50;
+hotend_vert_dist = 40;
+$bedDia=200; 
+splatewd = 160;//
+
+//*/
+
+/* Alternative dataset with same components HXMS 172/630 - Scratch build
+//  -> usable diameter 188 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
+// uncommenting the block will supersede former data  
+Delta_name = str("Lily 'S' 172/630 by PRZ"); // shall use 10 or 12 mm rods, not designed yet
+beam_int_radius = 172;
+arm_length = 266;
+mini_angle = 22; 
+basewd = 460;
+basedp = 400;
+basedpoffset = 6;
+htotal = 630;
+rod_dia = 10;
+rod_space = 66;
+//rod_space = 44;
+lbearing_dia = 19;
+$wallsup = 90;
+rod_base = 2;
+$ht_tens = 70;
+hotend_vert_dist = 40;
+$bedDia = 260; 
+car_hor_offset= 18;
+splatewd = 180;
+// structure below floor for spool & power supply
+htsub = 220; // height of the sub-base -could be whatever you want, depending spool you use + tensioner clearance
+spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
+$spool_tsl = [115,-85,-120];
+//*/
+
+/* Alternative dataset with same components HXMS 188/800 - Scratch build
+//  -> usable diameter 286 mm H centre ~ 245 mm, periphery 215mm - base slightly enlarged
+// uncommenting the block will supersede former data  
+Delta_name = str("Lily V 188/800 by PRZ"); // future, with 20x40 V-Slot profiles
+//Movement part design to be done...
+// Effector will be the D-Box effector
+beam_int_radius = 188;
+arm_length = 305;
+mini_angle = 22; 
+arm_space= 84;  // space between the arms
+wire_space= 68; // space between the wires
+basewd = 520;
+basedp = 450;
+basedpoffset = 6;
+htotal=800;
+$wallsup = 100;
+$ht_tens = 80;
+hotend_vert_dist = 40;
+$bedDia=300; 
+car_hor_offset= 18;
+splatewd = 180;
+rod_space=0;
+dia_arm=6;
+dia_ball =8;
+corner_offset=20;
+frame_corner_radius=0; 
+belt_dist=8.5;
+motor_offset = -12; 
+eff_hor_offset= 30;
+
+splatewd = 230;
+basedpoffset = 2; // base/top panel front offset
+motor_voffset = panelthk+23;
+// structure below floor for spool & power supply
+htsub = 220; // height of the sub-base -
+spoolsep_dp = 220; // depth of spool space - panel 15mm shorter
+$spool_tsl = [115,-100,-120];
+
+//*/
 
 module cyltest(dia) {
   difference() {
@@ -517,9 +609,9 @@ module panel (num){
       diff() {
         cubey (basewd/2,-midpaneldp,boxpanelthk, -basewd/4,splatedist,basethk/2);
         rotz (-30) //closing side panel left - 3 -
-          cubex (800,1500,50, -platedist-boxpanelthk);
+          cubex (400,800,50, -platedist-boxpanelthk);
         tsl (-(basewd-30)/2)
-          cubex (-50,1000,50);
+          cubex (-50,500,50);
       } 
   else if (num==15) //top panel
     diff() {
